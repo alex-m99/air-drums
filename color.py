@@ -28,10 +28,12 @@ while True:
     ret, frame = cap.read()
 
     hsvImage = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    
+    blur = cv2.GaussianBlur(hsvImage, (51, 51), 0)
 
     lowerLimit, upperLimit = get_limits(color=green)
 
-    mask = cv2.inRange(hsvImage, lowerLimit, upperLimit)
+    mask = cv2.inRange(blur, lowerLimit, upperLimit)
 
     mask_ = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
@@ -40,19 +42,29 @@ while True:
 
     if bbox[2] > 0 and bbox[3] > 0:
         x, y, w, h = bbox
-
+        points = [(x, y), (x+w, y), (x, y+h), (x+w, y+h)]
         frame = cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 5)
 
         # Check if the blue object hits the bottom rectangle
-        if y + h >= bottom_rectangle[0][1]:
-            if not snare_sound_played:
-                snare_sound.play()
-                snare_sound_played = True
+        # if y + h >= bottom_rectangle[0][1]:
+        #     if not snare_sound_played:
+        #         snare_sound.play()
+        #         snare_sound_played = True
+        # else:
+        #     snare_sound_played = False
+
+        for point in points:
+            if bottom_rectangle[0][0] <= point[0] <= bottom_rectangle[1][0] and \
+               bottom_rectangle[0][1] <= point[1] <= bottom_rectangle[1][1]:
+                if not snare_sound_played:
+                    snare_sound.play()
+                    snare_sound_played = True
+                break
         else:
             snare_sound_played = False
 
         # Check if any point of the bounding box is inside the top right rectangle
-        points = [(x, y), (x+w, y), (x, y+h), (x+w, y+h)]
+        
         for point in points:
             if top_right_rectangle[0][0] <= point[0] <= top_right_rectangle[1][0] and \
                top_right_rectangle[0][1] <= point[1] <= top_right_rectangle[1][1]:
