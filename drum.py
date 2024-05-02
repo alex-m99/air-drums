@@ -14,6 +14,7 @@ class Drum:
         self.__soundPath = soundPath
         self.__hasCircle = False
         self.__state = 0
+        self.__velocity = 0.0
 
         pygame.mixer.init()
         self.__sound = pygame.mixer.Sound(soundPath)
@@ -53,6 +54,12 @@ class Drum:
     
     def getState(self):
         return self.__state
+    
+    def setVelocity(self, velocity):
+        self.__velocity = velocity
+    
+    def getVelocity(self):
+        return self.__velocity
     
     def playSound(self):
         self.__sound.play()

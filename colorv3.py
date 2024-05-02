@@ -7,11 +7,18 @@ from drum import Drum
 pygame.init()
 
 #Instantiate drum objects
-snare = Drum("snare", (200, 400), (400, 480), "snare.mp3")
-ride = Drum("ride", (440, 0), (640, 200), "ride_sound.wav")
-drums = [snare, ride]
+snare = Drum("snare", (210, 300), (400, 480), "snare.mp3")
+hihat = Drum("hihat", (440, 250), (640, 400), "hihat.mp3")
+kick = Drum("kick", (0, 300), (200, 480), "kick.mp3")
+#ride = Drum("ride", (440, 0), (640, 100), "ride_sound.wav")
+crash = Drum("crash", (0, 0), (400, 90), "crash.mp3")
+
+drums = [snare, hihat, crash, kick]
 
 cap = cv2.VideoCapture(0)
+
+# Initialize variables to store previous circle positions
+prev_green_circles = []
 
 while True:
     ret, frame = cap.read()
@@ -43,15 +50,46 @@ while True:
             circle = (center, radius)
 
             green_circles.append(circle)
+
+    # Calculate velocity for each green circle
+    velocities = []
+    for circle, prev_circle in zip(green_circles, prev_green_circles):
+        (x, y), _ = circle
+        (prev_x, prev_y), _ = prev_circle
+        velocity = np.sqrt((x - prev_x)**2 + (y - prev_y)**2)
+        velocities.append(velocity)
+
+    # Update previous circle positions
+    prev_green_circles = green_circles.copy()
+
+   # print(velocities)
+
+    # Draw green circles and their velocities
+    for circle, velocity in zip(green_circles, velocities):
+        (x, y), radius = circle
+        cv2.circle(frame, (int(x), int(y)), radius, (0, 255, 0), 2)
+        cv2.putText(frame, f"Velocity: {velocity:.2f}", (int(x - radius), int(y + radius + 20)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+
     
     # Check for each drum if there is a green circle curently in it and set hasCircle accordingly
     for drum in drums:
-        for circle in green_circles:
+        for circle, velocity in zip(green_circles, velocities):
             (x, y), radius = circle
-            if drum.getTopLeft()[0] <= x <= drum.getBottomRight()[0] and \
-               drum.getTopLeft()[1] <= y <= drum.getBottomRight()[1]:
-                   drum.setHasCircle(True) 
-                   break
+            # if drum.getTopLeft()[0] <= x + radius <= drum.getBottomRight()[0] and \
+            #    drum.getTopLeft()[1] <= y + radius <= drum.getBottomRight()[1]:
+            #        drum.setHasCircle(True) 
+            #        break
+            if (drum.getName() == "snare" or drum.getName() == "hihat") and drum.getTopLeft()[0] <= x <= drum.getBottomRight()[0] and \
+                y + radius >= drum.getTopLeft()[1]:
+                    drum.setHasCircle(True)
+                    drum.setVelocity(velocity)
+                    break
+            elif drum.getTopLeft()[0] <= x <= drum.getBottomRight()[0] and \
+                drum.getTopLeft()[1] <= y <= drum.getBottomRight()[1]:
+                    drum.setHasCircle(True) 
+                    drum.setVelocity(velocity)
+                    break
             else:
                 drum.setHasCircle(False)
             
@@ -73,13 +111,14 @@ while True:
      # Check which drums have a state of 1 and play the sound for them
     for drum in drums:
         if drum.getState() == 1:
+            #if drum.getVelocity() > 40:
             drum.playSound()
 
     # Draw rectangles on the frame
     for drum in drums:
         frame = cv2.rectangle(frame, drum.getTopLeft(), drum.getBottomRight(), (0, 0, 255), 2)
-
-    print(ride.getState())
+        cv2.putText(frame, f"Velocity: {drum.getVelocity():.2f}", (drum.getTopLeft()[0], drum.getTopLeft()[1] - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
 
     cv2.imshow('frame', frame)
 
