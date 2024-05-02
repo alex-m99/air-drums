@@ -15,13 +15,15 @@ bottom_rectangle = [(200, 400), (400, 480)]
 top_right_rectangle = [(440, 0), (640, 200)]
 
 # Flags to track if the sounds have been played
-#snare_sound_played = False
-#ride_sound_played = False
+snare_sound_played = False
+ride_sound_played = False
 
 cap = cv2.VideoCapture(0)
 #is_in_bottom_rectangle = False
 #is_in_top_right_rectangle = False
 
+
+state = 0
 while True:
     ret, frame = cap.read()
 
@@ -52,35 +54,72 @@ while True:
             circle = Circle(center, radius)
 
             green_circles.append(circle)
-
+    
     
     # Check green circles for sound and position
-    for circle in green_circles:
-        x, y = circle.center
-        #points = [(x,y), (x + radius,y), (x-radius, y), (x,  y+radius), (x, y-radius)]
-        # Check if the green circle is in the bottom  rectangle
-        # for point in points:
-        #     if bottom_rectangle[0][0] <= point[0] <= bottom_rectangle[1][0] and \
-        #     bottom_rectangle[0][1] <= point[1] <= bottom_rectangle[1][1]:
-        #         if not ride_sound_played:
-        #             snare_sound.play()
-        #             snare_sound_played = True
-        # else:
-        #     snare_sound_played= False
+    # for circle in green_circles:
+    #     x, y = circle.getCenter()
+    #     #points = [(x,y), (x + radius,y), (x-radius, y), (x,  y+radius), (x, y-radius)]
+    #     # Check if the green circle is in the bottom  rectangle
+    #     # for point in points:
+    #     #     if bottom_rectangle[0][0] <= point[0] <= bottom_rectangle[1][0] and \
+    #     #     bottom_rectangle[0][1] <= point[1] <= bottom_rectangle[1][1]:
+    #     #         if not ride_sound_played:
+    #     #             snare_sound.play()
+    #     #             snare_sound_played = True
+    #     # else:
+    #     #     snare_sound_played= False
 
-        # Check if the green circle is in the top right rectangle
-        if top_right_rectangle[0][0] <= x <= top_right_rectangle[1][0] and \
-           top_right_rectangle[0][1] <= y <= top_right_rectangle[1][1]:
-            is_in_top_right_rectangle = True
-            circle.setIsInRideRectangle = True;
-        else:
-            is_in_top_right_rectangle = False
-    
-    if is_in_top_right_rectangle and not ride_sound_played:
+    #     # Check if the green circle is in the top right rectangle
+    #     if top_right_rectangle[0][0] <= x <= top_right_rectangle[1][0] and \
+    #        top_right_rectangle[0][1] <= y <= top_right_rectangle[1][1]:
+    #         if state == 0:
+    #             state = 1
+    #         elif state == 1:
+    #             state = 2
+    #     else:
+    #         state = 0
+
+    #Check each rectangle for any circles
+
+    for rectangle in rectangles:
+        for circle in green_circles:
+            x, y = circle.getCenter()
+
+            if rectangle[0][0] <= x <= rectangle[1][0] and \
+            rectangle[0][1] <= y <= trectangle[1][1] and not played:
+                stare_cerc = 1
+                
+            else:
+                stare_cerc = 0 # afara
+
+    for rectangle in recrangle
+        for circle in green_circles:
+            x, y = circle.getCenter()
+
+            
+    if state == 1:
         ride_sound.play()
-        ride_sound_played = True
-    elif not is_in_top_right_rectangle:
-        ride_sound_played = False
+    
+    print(state)
+    # for circle in green_circles:
+    #     print("Is in ride: ", circle.getIsInRideRectangle())
+    #     #print("Is set Played: ", circle.getPlayedRideRectangle())
+    #     print("\n")
+    #     if circle.getIsInRideRectangle() and circle.getPlayedRideRectangle() == False:
+    #         ride_sound.play()
+    #         circle.setIsInRideRectangle(True)
+    #         circle.setPlayedRideRectangle(True)
+    #         #print("Is set Played: ", circle.getPlayedRideRectangle())
+
+    #     elif circle.getIsInRideRectangle() and circle.getPlayedRideRectangle():
+    #         print("AAAAAAAAAAAAAAAAAAAAAA")
+    #         circle.setIsInRideRectangle(True)
+    #         circle.setPlayedRideRectangle(True)
+    #     elif not circle.getIsInRideRectangle():
+    #         circle.setIsInRideRectangle(False)
+    #         circle.setPlayedRideRectangle(False)
+
 
     # Draw rectangles on the frame
     frame = cv2.rectangle(frame, bottom_rectangle[0], bottom_rectangle[1], (0, 0, 255), 2)
