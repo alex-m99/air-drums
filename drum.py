@@ -4,17 +4,21 @@
 # - 2: the circle is in the rectangle (sound shouldn't play)  
 
 import pygame
+import cv2
 
 
 class Drum:
-    def __init__(self, name, topLeft, bottomRight, soundPath):
+    def __init__(self, name, topLeft, bottomRight, soundPath, image):
         self.__name = name
         self.__topLeft = topLeft
         self.__bottomRight = bottomRight
         self.__soundPath = soundPath
         self.__hasCircle = False
+        self.__hasHit = False
         self.__state = 0
         self.__velocity = 0.0
+        self.__direction = "None"
+        self.__image = image
 
         pygame.mixer.init()
         self.__sound = pygame.mixer.Sound(soundPath)
@@ -48,6 +52,12 @@ class Drum:
     
     def getHasCircle(self):
         return self.__hasCircle
+    
+    def setHasHit(self, hasHit):
+        self.__hasHit = hasHit
+
+    def getHasHit(self):
+        return self.__hasHit
 
     def setState(self, state):
         self.__state = state
@@ -60,6 +70,21 @@ class Drum:
     
     def getVelocity(self):
         return self.__velocity
+    
+    def setDirection(self, direction):
+        self.__direction = direction
+    
+    def getDirection(self):
+        return self.__direction
+    
+    def setImage(self, image):
+        self.__image = image
+    
+    def getImage(self, width, height):
+        if self.__image is not None:
+            return cv2.resize(self.__image, (width, height))
+        else:
+            return None
     
     def playSound(self):
         self.__sound.play()
