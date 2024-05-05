@@ -3,7 +3,7 @@ import numpy as np
 import pygame
 from drum import Drum
 import ctypes
-
+from moviepy.editor import VideoFileClip
 
 mouse_clicked = False
 
@@ -182,6 +182,13 @@ pygame.display.set_caption("Main Menu")
 pygame.mixer.music.load("background_music.mp3")  # Change "background_music.mp3" to your music file
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)  # -1 makes the music loop indefinitely
+pygame.mixer.music.set_pos(9.5)
+
+
+# Load GIF using moviepy
+gif_clip = VideoFileClip("background.gif")
+gif_clip = gif_clip.resize((screen_width, screen_height))
+frames = [pygame.image.fromstring(frame.tostring(), gif_clip.size, "RGB") for frame in gif_clip.iter_frames()]
 
 # Button class
 class Button:
@@ -210,39 +217,73 @@ class Button:
         return self.x + self.width > mouse[0] > self.x and self.y + self.height > mouse[1] > self.y
 
 # Create buttons
-play_button = Button("Play", 300, 200, 200, 100, GREEN, (0, 200, 0), action=start_drum_app)
-exit_button = Button("Exit", 300, 350, 200, 100, RED, (200, 0, 0), action=pygame.quit)
+play_button = Button("Play", 300, 200, 200, 100, GREEN, (0, 200, 0), action=start_drum_app) # Change action later
+choose_drums_button = Button("Choose Drums", 300, 350, 200, 100, RED, (200, 0, 0), action=None)
+exit_button = Button("Exit", 300, 500, 200, 100, RED, (200, 0, 0), action=pygame.quit)
+
+# Submenu buttons
+drum1_button = Button("Drum 1", 200, 200, 200, 100, GREEN, (0, 200, 0))
+drum2_button = Button("Drum 2", 400, 200, 200, 100, GREEN, (0, 200, 0))
+drum3_button = Button("Drum 3", 300, 350, 200, 100, RED, (200, 0, 0))
+back_button = Button("Back", 300, 500, 200, 100, RED, (200, 0, 0))
 
 # Main menu loop
 running = True
 action = None
+submenu = False
+frame_index = 0
+clock = pygame.time.Clock()
+
 while running:
-    screen.fill(WHITE)
-    
+    screen.blit(frames[frame_index], (0, 0))
+    frame_index = (frame_index + 1) % len(frames)  # Loop through frames
+
     # Get mouse position
     mouse_pos = pygame.mouse.get_pos()
 
-    # Draw buttons
-    play_button.draw(screen, mouse_pos)
-    exit_button.draw(screen, mouse_pos)
+    if not submenu:
+        # Draw main menu buttons
+        play_button.draw(screen, mouse_pos)
+        choose_drums_button.draw(screen, mouse_pos)
+        exit_button.draw(screen, mouse_pos)
+    else:
+        # Draw submenu buttons
+        drum1_button.draw(screen, mouse_pos)
+        drum2_button.draw(screen, mouse_pos)
+        drum3_button.draw(screen, mouse_pos)
+        back_button.draw(screen, mouse_pos)
 
-    
     # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONUP:
-            if play_button.is_clicked(mouse_pos):
+            if not submenu:
+                if play_button.is_clicked(mouse_pos):
+                    action = play_button.action
+                    running = False
+                elif choose_drums_button.is_clicked(mouse_pos):
+                    submenu = True
+                elif exit_button.is_clicked(mouse_pos):
+                    running = False
+            else:
+                if drum1_button.is_clicked(mouse_pos):
+                    # Add action for Drum 1
+                    print("Drum 1 selected")
+                elif drum2_button.is_clicked(mouse_pos):
+                    # Add action for Drum 2
+                    print("Drum 2 selected")
+                elif drum3_button.is_clicked(mouse_pos):
+                    # Add action for Drum 3
+                    print("Drum 3 selected")
+                elif back_button.is_clicked(mouse_pos):
+                    submenu = False
 
-                action = play_button.action
-                running = False
-            elif exit_button.is_clicked(mouse_pos):
-                action = exit_button.action
-                running = False
     pygame.display.update()
+    clock.tick(10)  # Adjust frame rate as needed
 
 # Quit Pygame when you want to close the app
 pygame.quit()
-#sys.exit()
 
-action()
+if action:
+    action()
