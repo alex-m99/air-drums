@@ -11,12 +11,12 @@ snare_img = cv2.imread("snare.png", -1)
 
 # Instantiate drum objects
 snare = Drum("snare", (210, 300), (400, 480), "snare.mp3", snare_img)
-hihat = Drum("hihat", (440, 250), (640, 400), "hihat.mp3", snare_img)
+hihat = Drum("hihat", (440, 180), (640, 330), "ride_sound.wav", snare_img)
 kick = Drum("kick", (0, 300), (200, 480), "kick.mp3", snare_img)
 # ride = Drum("ride", (440, 0), (640, 100), "ride_sound.wav")
-crash = Drum("crash", (0, 0), (400, 90), "crash.mp3", snare_img)
+crash = Drum("crash", (0, 100), (200, 290), "china.mp3", snare_img)
 
-drums = [snare, hihat, kick]
+drums = [snare, hihat, crash]
 
 cap = cv2.VideoCapture(0)
 
@@ -26,6 +26,17 @@ cv2.setWindowProperty('web cam', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 # Initialize variables to store previous circle positions
 prev_green_circles = []
+
+# Initialize variables for mouse click event
+mouse_clicked = False
+
+def mouse_callback(event, x, y, flags, param):
+    print(event)
+    global mouse_clicked
+    if event == cv2.EVENT_LBUTTONDOWN:
+        mouse_clicked = True
+
+cv2.setMouseCallback('web cam', mouse_callback)
 
 while True:
     ret, frame = cap.read()
@@ -107,13 +118,21 @@ while True:
         for circle, velocity, direction in zip(green_circles, velocities, directions):
             (x, y), radius = circle
             if drum.getTopLeft()[0] <= x <= drum.getBottomRight()[0] and \
-                drum.getTopLeft()[1] <= y - radius <= drum.getBottomRight()[1]:
+                (drum.getTopLeft()[1] <= y + radius or \
+                drum.getTopLeft()[1] <= y - radius):
                 drum.setHasCircle(True)
                 #drum.setHasHit(False)
                 drum.setVelocity(velocity)
                 drum.setDirection(direction)
                 break
 
+            # elif drum.getName() == "hihat" and drum.getTopLeft()[0] <= x <= drum.getBottomRight()[0] and \
+            #     drum.getTopLeft()[1] <= y + radius <= drum.getBottomRight()[1]:
+            #         drum.setHasCircle(True)
+            #         #drum.setHasHit(False)
+            #         drum.setVelocity(velocity)
+            #         drum.setDirection(direction)
+            #         break
             else:
                 drum.setHasCircle(False)
 
@@ -139,10 +158,15 @@ while True:
 
     # Check which drums have a state of 1 and play the sound for them
     for drum in drums:
-        if drum.getState() == 1:
-            if drum.getVelocity() > 10:
-                if drum.getDirection() == "Down":
+        if drum.getName() == "crash" and drum.getState() == 1: 
+            drum.playSound()
+        elif drum.getState() == 1 and drum.getDirection() == "Down":
                     drum.playSound()
+
+    # Check if mouse is clicked and play bass drum sound
+    if mouse_clicked:
+        pygame.mixer.Sound("kick.mp3").play()
+        mouse_clicked = False
 
     # Draw rectangles on the frame
     # for drum in drums:
@@ -169,6 +193,8 @@ while True:
             drum_area_resized = cv2.resize(drum_img, (drum_area.shape[1], drum_area.shape[0]))
             blended = cv2.addWeighted(drum_area_resized, alpha, drum_area, 1 - alpha, 0)
             frame[y1:y2, x1:x2] = blended
+
+    
 
 
     cv2.imshow('web cam', frame)
