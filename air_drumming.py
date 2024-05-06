@@ -8,17 +8,20 @@ from moviepy.editor import VideoFileClip
 mouse_clicked = False
 
 # Define the drum app function
-def start_drum_app():
+def start_drum_app(snare_img_path, kick_img_path, rythm_img_path, accent_img_path):
     global mouse_clicked
-    snare_img = cv2.imread("resources/images/snare.png", -1)
+    snare_img = cv2.imread(snare_img_path, -1)
+    kick_img = cv2.imread(kick_img_path, -1)
+    rythm_img = cv2.imread(rythm_img_path, -1)
+    accent_img = cv2.imread(accent_img_path, -1)
 
     # Instantiate drum objects
-    snare = Drum("snare", (210, 300), (400, 480), "resources/sounds/snare.mp3", snare_img)
-    hihat = Drum("hihat", (440, 180), (640, 330), "resources/sounds/ride_sound.wav", snare_img)
-    kick = Drum("kick", (0, 300), (200, 480), "resources/sounds/kick.mp3", snare_img)
-    crash = Drum("crash", (0, 100), (200, 290), "resources/sounds/china.mp3", snare_img)
+    snare = Drum("snare", (210, 300), (400, 480), snare_img, snare_img_path)
+    kick = Drum("kick", (0, 0), (0, 0), kick_img, kick_img_path)
+    rithm = Drum("rithm", (440, 180), (640, 330), rythm_img, rythm_img_path)
+    accent = Drum("accent", (0, 180), (200, 330), accent_img, accent_img_path)
 
-    drums = [snare, hihat, crash]
+    drums = [snare, rithm, accent]
 
     cap = cv2.VideoCapture(0)
 
@@ -37,7 +40,6 @@ def start_drum_app():
         global mouse_clicked
         if event == cv2.EVENT_RBUTTONDOWN:
             mouse_clicked = True
-            print('Mouse click in callback: ', mouse_clicked)
 
     cv2.setMouseCallback('web cam', mouse_callback)
     
@@ -133,7 +135,7 @@ def start_drum_app():
 
         # Check if mouse is clicked and play bass drum sound
         if mouse_clicked:
-            pygame.mixer.Sound("resources/sounds/kick.mp3").play()
+            kick.playSound()
             mouse_clicked = False
 
         # Overlay drum images onto the frame
@@ -222,28 +224,34 @@ class Button:
 
 
 # Create buttons
-play_button = Button("Play", 300, 200, 200, 100, GREEN, (0, 200, 0), action=start_drum_app) # Change action later
-choose_drums_button = Button("Choose Drums", 300, 350, 200, 100, RED, (200, 0, 0), action=None)
-exit_button = Button("Exit", 300, 500, 200, 100, RED, (200, 0, 0), action=pygame.quit)
+play_button = Button("Play", 100, 200, 300, 100, GREEN, (0, 200, 0), action=start_drum_app) # Change action later
+choose_drums_button = Button("Choose Drums", 100, 350, 300, 100, RED, (200, 0, 0), action=None)
+exit_button = Button("Exit", 100, 500, 300, 100, RED, (200, 0, 0), action=pygame.quit)
 
 # Submenu buttons
 snare_button = Button("Snare", 55, 100, 200, 100, GREEN, (0, 200, 0), image=None)
-drum2_button = Button("Drum 2", 300, 100, 200, 100, GREEN, (0, 200, 0), image=None)
-drum3_button = Button("Drum 3", 680, 100, 200, 100, GREEN, (0, 200, 0), image=None)
-back_button = Button("Back", 300, 450, 200, 100, RED, (200, 0, 0), action=None, image=None)
+kick_button = Button("Kick", 290, 100, 200, 100, GREEN, (0, 200, 0), image=None)
+rythm_cymbal_button = Button("Rythm Cymbal", 710, 100, 200, 100, GREEN, (0, 200, 0), image=None)
+accent_cymbal_button = Button("Accent Cymbal", 945, 100, 200, 100, GREEN, (0, 200, 0), image=None)
+back_button = Button("Back", 440, 550, 300, 100, RED, (200, 0, 0), action=None, image=None)
 
 # Drum images
 snare_pic1 = pygame.image.load("resources/images/snare1.png")
 snare_pic2 = pygame.image.load("resources/images/snare2.png")
 snare_pic3 = pygame.image.load("resources/images/snare3.png")
 
-drum2_pic1 = pygame.image.load("resources/images/ride1.png")
-drum2_pic2 = pygame.image.load("resources/images/ride2.png")
-drum2_pic3 = pygame.image.load("resources/images/ride3.png")
 
-drum3_pic1 = pygame.image.load("resources/images/crash1.png")
-drum3_pic2 = pygame.image.load("resources/images/crash2.png")
-drum3_pic3 = pygame.image.load("resources/images/crash3.png")
+kick_pic1 = pygame.image.load("resources/images/kick1.png")
+kick_pic2 = pygame.image.load("resources/images/kick2.png")
+kick_pic3 = pygame.image.load("resources/images/kick3.png")
+
+rythm_cymbal_pic1 = pygame.image.load("resources/images/ride1.png")
+rythm_cymbal_pic2 = pygame.image.load("resources/images/ride2.png")
+rythm_cymbal_pic3 = pygame.image.load("resources/images/ride3.png")
+
+accent_cymbal_pic1 = pygame.image.load("resources/images/crash1.png")
+accent_cymbal_pic2 = pygame.image.load("resources/images/crash2.png")
+accent_cymbal_pic3 = pygame.image.load("resources/images/crash3.png")
 
 
 
@@ -252,22 +260,43 @@ snare_pic1 = pygame.transform.scale(snare_pic1, (200, 200)) #width, height
 snare_pic2 = pygame.transform.scale(snare_pic2, (200, 200))
 snare_pic3 = pygame.transform.scale(snare_pic3, (200, 200))
 
-drum2_pic1 = pygame.transform.scale(drum2_pic1, (200, 200))
-drum2_pic2 = pygame.transform.scale(drum2_pic2, (200, 200))
-drum2_pic3 = pygame.transform.scale(drum2_pic3, (200, 200))
+kick_pic1 = pygame.transform.scale(kick_pic1, (200, 200)) #width, height
+kick_pic2 = pygame.transform.scale(kick_pic2, (200, 200))
+kick_pic3 = pygame.transform.scale(kick_pic3, (200, 200))
 
-drum3_pic1 = pygame.transform.scale(drum3_pic1, (200, 200))
-drum3_pic2 = pygame.transform.scale(drum3_pic2, (200, 200))
-drum3_pic3 = pygame.transform.scale(drum3_pic3, (200, 200))
+rythm_cymbal_pic1 = pygame.transform.scale(rythm_cymbal_pic1, (200, 200))
+rythm_cymbal_pic2 = pygame.transform.scale(rythm_cymbal_pic2, (200, 200))
+rythm_cymbal_pic3 = pygame.transform.scale(rythm_cymbal_pic3, (200, 200))
 
+accent_cymbal_pic1 = pygame.transform.scale(accent_cymbal_pic1, (200, 200))
+accent_cymbal_pic2 = pygame.transform.scale(accent_cymbal_pic2, (200, 200))
+accent_cymbal_pic3 = pygame.transform.scale(accent_cymbal_pic3, (200, 200))
+
+
+# Initialize the font
+font = pygame.font.Font(None, 36)
 
 # Main menu loop
 running = True
 action = None
 submenu = False
+
 selected_snare = snare_pic1
-selected_drum2 = drum2_pic1
-selected_drum3 = drum3_pic1
+snare_image = "snare1.png"
+snare_name = "Normal snare"
+
+selected_kick = kick_pic1
+kick_image = "kick1.png"
+kick_name = "Normal kick"
+
+selected_rythm_cymbal = rythm_cymbal_pic1
+rythm_cymbal_image = "ride1.png"
+rythm_cymbal_name = "Ride"
+
+selected_accent_cymbal = accent_cymbal_pic1
+accent_cymbal_image = "crash1.png"
+accent_cymbal_name = "Crash"
+
 frame_index = 0
 clock = pygame.time.Clock()
 
@@ -283,17 +312,33 @@ while running:
         play_button.draw(screen, mouse_pos)
         choose_drums_button.draw(screen, mouse_pos)
         exit_button.draw(screen, mouse_pos)
+
+       # screen.blit(selected_snare, (800, 200))
+        #screen.blit(selected_kick, (800, 400))
+
     else:
         # Draw submenu buttons
         snare_button.draw(screen, mouse_pos)
-        drum2_button.draw(screen, mouse_pos)
-        drum3_button.draw(screen, mouse_pos)
+        kick_button.draw(screen, mouse_pos)
+        rythm_cymbal_button.draw(screen, mouse_pos)
+        accent_cymbal_button.draw(screen, mouse_pos)
         back_button.draw(screen, mouse_pos)
 
         # Draw drum images
         screen.blit(selected_snare, (55, 230))
-        screen.blit(selected_drum2, (300, 230))
-        screen.blit(selected_drum3, (600, 230))
+        screen.blit(selected_kick, (290, 230))
+        screen.blit(selected_rythm_cymbal, (710, 230))
+        screen.blit(selected_accent_cymbal, (945, 230))
+
+         # Add text under drum images
+        text_snare = font.render(snare_name, True, (255, 255, 255))
+        text_kick = font.render(kick_name, True, (255, 255, 255))
+        text_rythm_cymbal = font.render(rythm_cymbal_name, True, (255, 255, 255))
+        text_accent_cymbal = font.render(accent_cymbal_name, True, (255, 255, 255))
+        screen.blit(text_snare, (55 + selected_snare.get_width() // 2 - text_snare.get_width() // 2, 450))
+        screen.blit(text_kick, (290 + selected_kick.get_width() // 2 - text_kick.get_width() // 2, 450))
+        screen.blit(text_rythm_cymbal, (710 + selected_rythm_cymbal.get_width() // 2 - text_rythm_cymbal.get_width() // 2, 450))
+        screen.blit(text_accent_cymbal, (945 + selected_accent_cymbal.get_width() // 2 - text_accent_cymbal.get_width() // 2, 450))
 
     # Event handling
     for event in pygame.event.get():
@@ -310,13 +355,61 @@ while running:
                     running = False
             else:
                 if snare_button.is_clicked(mouse_pos):
-                    selected_snare = snare_pic2 if selected_drum1 == snare_pic1 else (snare_pic3 if selected_drum1 == snare_pic2 else snare_pic1)
-                elif drum2_button.is_clicked(mouse_pos):
-                    selected_drum2 = drum2_pic2 if selected_drum2 == drum2_pic1 else (drum2_pic3 if selected_drum2 == drum2_pic2 else drum2_pic1)
-                elif drum3_button.is_clicked(mouse_pos):
-                    selected_drum3 = drum3_pic2 if selected_drum3 == drum3_pic1 else (drum3_pic3 if selected_drum3 == drum3_pic2 else drum3_pic1)
+                    if selected_snare == snare_pic1:
+                        snare_name = "Loud snare"
+                        snare_image = "snare2.png"
+                        selected_snare = snare_pic2
+                    elif selected_snare == snare_pic2:
+                        snare_name = "Electric snare"
+                        snare_image = "snare3.png"
+                        selected_snare = snare_pic3
+                    else:
+                        snare_name = "Normal snare"
+                        snare_image = "snare1.png"
+                        selected_snare = snare_pic1
+                elif kick_button.is_clicked(mouse_pos):
+                    if selected_kick == kick_pic1:
+                        kick_name = "Loud kick"
+                        kick_image = "kick2.png"
+                        selected_kick = kick_pic2
+                    elif selected_kick == kick_pic2:
+                        kick_name = "Electric kick"
+                        kick_image = "kick3.png"
+                        selected_kick = kick_pic3
+                    else:
+                        kick_name = "Normal kick"
+                        kick_image = "kick1.png"
+                        selected_kick = kick_pic1
+                elif rythm_cymbal_button.is_clicked(mouse_pos):
+                    if selected_rythm_cymbal == rythm_cymbal_pic1:
+                        rythm_cymbal_name = "Hihat"
+                        rythm_cymbal_image = "ride2.png"
+                        selected_rythm_cymbal = rythm_cymbal_pic2
+                    elif selected_rythm_cymbal == rythm_cymbal_pic2:
+                        rythm_cymbal_name = "Electric hihat"
+                        rythm_cymbal_image = "ride3.png"
+                        selected_rythm_cymbal = rythm_cymbal_pic3
+                    else:
+                        rythm_cymbal_name = "Ride"
+                        rythm_cymbal_image = "ride1.png"
+                        selected_rythm_cymbal = rythm_cymbal_pic1
+                elif accent_cymbal_button.is_clicked(mouse_pos):
+                    if selected_accent_cymbal == accent_cymbal_pic1:
+                        accent_cymbal_name = "China cymbal"
+                        accent_cymbal_image = "crash2.png"
+                        selected_accent_cymbal = accent_cymbal_pic2
+                    elif selected_accent_cymbal == accent_cymbal_pic2:
+                        accent_cymbal_name = "Electric crash"
+                        accent_cymbal_image = "crash3.png"
+                        selected_accent_cymbal = accent_cymbal_pic3
+                    else:
+                        accent_cymbal_name = "Crash cymbal"
+                        accent_cymbal_image = "crash1.png"
+                        selected_accent_cymbal = accent_cymbal_pic1
+                
                 elif back_button.is_clicked(mouse_pos):
                     submenu = False
+
     
 
 
@@ -329,12 +422,22 @@ while running:
     pygame.display.update()
     clock.tick(10)  # Adjust frame rate as needed
 
-print("Selected_drum1: ", selected_drum1)
-print("Selected_drum2: ", selected_drum2)
-print("Selected_drum3: ", selected_drum3)
+print("Selected_drum1: ", selected_snare)
+print("Selected_drum2: ", selected_kick)
+print("Selected_drum3: ", selected_rythm_cymbal)
+print("Selected_drum4: ", selected_accent_cymbal)
 
 # Quit Pygame when you want to close the app
 pygame.quit()
 
+path = "resources/images/"
+
+print(path+snare_image)
+print(path+kick_image)
+print(path+rythm_cymbal_image)
+print(path+accent_cymbal_image)
+
+
+
 if action:
-    action()
+    action(path+snare_image, path+kick_image, path+rythm_cymbal_image, path+accent_cymbal_image)
