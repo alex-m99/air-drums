@@ -10,13 +10,13 @@ mouse_clicked = False
 # Define the drum app function
 def start_drum_app():
     global mouse_clicked
-    snare_img = cv2.imread("snare.png", -1)
+    snare_img = cv2.imread("resources/images/snare.png", -1)
 
     # Instantiate drum objects
-    snare = Drum("snare", (210, 300), (400, 480), "snare.mp3", snare_img)
-    hihat = Drum("hihat", (440, 180), (640, 330), "ride_sound.wav", snare_img)
-    kick = Drum("kick", (0, 300), (200, 480), "kick.mp3", snare_img)
-    crash = Drum("crash", (0, 100), (200, 290), "china.mp3", snare_img)
+    snare = Drum("snare", (210, 300), (400, 480), "resources/sounds/snare.mp3", snare_img)
+    hihat = Drum("hihat", (440, 180), (640, 330), "resources/sounds/ride_sound.wav", snare_img)
+    kick = Drum("kick", (0, 300), (200, 480), "resources/sounds/kick.mp3", snare_img)
+    crash = Drum("crash", (0, 100), (200, 290), "resources/sounds/china.mp3", snare_img)
 
     drums = [snare, hihat, crash]
 
@@ -133,8 +133,7 @@ def start_drum_app():
 
         # Check if mouse is clicked and play bass drum sound
         if mouse_clicked:
-            print('A INTRAT IN MOUSE CLICK COAIE')
-            pygame.mixer.Sound("kick.mp3").play()
+            pygame.mixer.Sound("resources/sounds/kick.mp3").play()
             mouse_clicked = False
 
         # Overlay drum images onto the frame
@@ -172,27 +171,27 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 # Set up the screen
-screen_width = 800
-screen_height = 600
+screen_width = 1200
+screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Main Menu")
 
 
 # Load music
-pygame.mixer.music.load("background_music.mp3")  # Change "background_music.mp3" to your music file
+pygame.mixer.music.load("resources/sounds/background_music.mp3")  # Change "background_music.mp3" to your music file
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)  # -1 makes the music loop indefinitely
 pygame.mixer.music.set_pos(9.5)
 
 
 # Load GIF using moviepy
-gif_clip = VideoFileClip("background.gif")
+gif_clip = VideoFileClip("resources/images/background.gif")
 gif_clip = gif_clip.resize((screen_width, screen_height))
 frames = [pygame.image.fromstring(frame.tostring(), gif_clip.size, "RGB") for frame in gif_clip.iter_frames()]
 
 # Button class
 class Button:
-    def __init__(self, text, x, y, width, height, inactive_color, active_color, action=None):
+    def __init__(self, text, x, y, width, height, inactive_color, active_color, action=None, image=None):
         self.text = text
         self.x = x
         self.y = y
@@ -201,20 +200,26 @@ class Button:
         self.inactive_color = inactive_color
         self.active_color = active_color
         self.action = action
+        self.image = image
+        self.clicked = False
 
     def draw(self, screen, mouse):
         if self.x + self.width > mouse[0] > self.x and self.y + self.height > mouse[1] > self.y:
             pygame.draw.rect(screen, self.active_color, (self.x, self.y, self.width, self.height))
         else:
             pygame.draw.rect(screen, self.inactive_color, (self.x, self.y, self.width, self.height))
+        
+        font = pygame.font.SysFont(None, 30)
+        text_surface = font.render(self.text, True, BLACK)
+        text_rect = text_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
+        screen.blit(text_surface, text_rect)
 
-        font = pygame.font.SysFont(None, 50)
-        text = font.render(self.text, True, BLACK)
-        text_rect = text.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
-        screen.blit(text, text_rect)
+        if self.image:
+            screen.blit(self.image, (self.x, self.y))
 
     def is_clicked(self, mouse):
         return self.x + self.width > mouse[0] > self.x and self.y + self.height > mouse[1] > self.y
+
 
 # Create buttons
 play_button = Button("Play", 300, 200, 200, 100, GREEN, (0, 200, 0), action=start_drum_app) # Change action later
@@ -222,15 +227,47 @@ choose_drums_button = Button("Choose Drums", 300, 350, 200, 100, RED, (200, 0, 0
 exit_button = Button("Exit", 300, 500, 200, 100, RED, (200, 0, 0), action=pygame.quit)
 
 # Submenu buttons
-drum1_button = Button("Drum 1", 200, 200, 200, 100, GREEN, (0, 200, 0))
-drum2_button = Button("Drum 2", 400, 200, 200, 100, GREEN, (0, 200, 0))
-drum3_button = Button("Drum 3", 300, 350, 200, 100, RED, (200, 0, 0))
-back_button = Button("Back", 300, 500, 200, 100, RED, (200, 0, 0))
+snare_button = Button("Snare", 55, 100, 200, 100, GREEN, (0, 200, 0), image=None)
+drum2_button = Button("Drum 2", 300, 100, 200, 100, GREEN, (0, 200, 0), image=None)
+drum3_button = Button("Drum 3", 680, 100, 200, 100, GREEN, (0, 200, 0), image=None)
+back_button = Button("Back", 300, 450, 200, 100, RED, (200, 0, 0), action=None, image=None)
+
+# Drum images
+snare_pic1 = pygame.image.load("resources/images/snare1.png")
+snare_pic2 = pygame.image.load("resources/images/snare2.png")
+snare_pic3 = pygame.image.load("resources/images/snare3.png")
+
+drum2_pic1 = pygame.image.load("resources/images/ride1.png")
+drum2_pic2 = pygame.image.load("resources/images/ride2.png")
+drum2_pic3 = pygame.image.load("resources/images/ride3.png")
+
+drum3_pic1 = pygame.image.load("resources/images/crash1.png")
+drum3_pic2 = pygame.image.load("resources/images/crash2.png")
+drum3_pic3 = pygame.image.load("resources/images/crash3.png")
+
+
+
+# Change the dimensions of the images
+snare_pic1 = pygame.transform.scale(snare_pic1, (200, 200)) #width, height
+snare_pic2 = pygame.transform.scale(snare_pic2, (200, 200))
+snare_pic3 = pygame.transform.scale(snare_pic3, (200, 200))
+
+drum2_pic1 = pygame.transform.scale(drum2_pic1, (200, 200))
+drum2_pic2 = pygame.transform.scale(drum2_pic2, (200, 200))
+drum2_pic3 = pygame.transform.scale(drum2_pic3, (200, 200))
+
+drum3_pic1 = pygame.transform.scale(drum3_pic1, (200, 200))
+drum3_pic2 = pygame.transform.scale(drum3_pic2, (200, 200))
+drum3_pic3 = pygame.transform.scale(drum3_pic3, (200, 200))
+
 
 # Main menu loop
 running = True
 action = None
 submenu = False
+selected_snare = snare_pic1
+selected_drum2 = drum2_pic1
+selected_drum3 = drum3_pic1
 frame_index = 0
 clock = pygame.time.Clock()
 
@@ -248,10 +285,15 @@ while running:
         exit_button.draw(screen, mouse_pos)
     else:
         # Draw submenu buttons
-        drum1_button.draw(screen, mouse_pos)
+        snare_button.draw(screen, mouse_pos)
         drum2_button.draw(screen, mouse_pos)
         drum3_button.draw(screen, mouse_pos)
         back_button.draw(screen, mouse_pos)
+
+        # Draw drum images
+        screen.blit(selected_snare, (55, 230))
+        screen.blit(selected_drum2, (300, 230))
+        screen.blit(selected_drum3, (600, 230))
 
     # Event handling
     for event in pygame.event.get():
@@ -267,20 +309,29 @@ while running:
                 elif exit_button.is_clicked(mouse_pos):
                     running = False
             else:
-                if drum1_button.is_clicked(mouse_pos):
-                    # Add action for Drum 1
-                    print("Drum 1 selected")
+                if snare_button.is_clicked(mouse_pos):
+                    selected_snare = snare_pic2 if selected_drum1 == snare_pic1 else (snare_pic3 if selected_drum1 == snare_pic2 else snare_pic1)
                 elif drum2_button.is_clicked(mouse_pos):
-                    # Add action for Drum 2
-                    print("Drum 2 selected")
+                    selected_drum2 = drum2_pic2 if selected_drum2 == drum2_pic1 else (drum2_pic3 if selected_drum2 == drum2_pic2 else drum2_pic1)
                 elif drum3_button.is_clicked(mouse_pos):
-                    # Add action for Drum 3
-                    print("Drum 3 selected")
+                    selected_drum3 = drum3_pic2 if selected_drum3 == drum3_pic1 else (drum3_pic3 if selected_drum3 == drum3_pic2 else drum3_pic1)
                 elif back_button.is_clicked(mouse_pos):
                     submenu = False
+    
+
+
+    # Display images under drum buttons
+    # drum1_button.image = selected_drum1
+    # drum2_button.image = selected_drum2
+    # drum3_button.image = selected_drum3
+
 
     pygame.display.update()
     clock.tick(10)  # Adjust frame rate as needed
+
+print("Selected_drum1: ", selected_drum1)
+print("Selected_drum2: ", selected_drum2)
+print("Selected_drum3: ", selected_drum3)
 
 # Quit Pygame when you want to close the app
 pygame.quit()
