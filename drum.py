@@ -15,7 +15,6 @@ class Drum:
         self.__image = image
         self.__imagePath = imagePath
         self.__hasCircle = False
-        self.__hasHit = False
         self.__state = 0
         self.__velocity = 0.0
         self.__direction = "None"
@@ -53,12 +52,6 @@ class Drum:
     
     def getHasCircle(self):
         return self.__hasCircle
-    
-    def setHasHit(self, hasHit):
-        self.__hasHit = hasHit
-
-    def getHasHit(self):
-        return self.__hasHit
 
     def setState(self, state):
         self.__state = state
@@ -99,29 +92,29 @@ class Drum:
     def chooseSoundPath(self, imagePath):
         path = "resources/sounds/"
         match imagePath:
-            case "resources/images/snare1.png":
+            case "resources/images/normal_snare.png":
                 return path + "snare1.mp3"
-            case "resources/images/snare2.png":
+            case "resources/images/loud_snare.jpg":
                 return path + "snare2.wav"
-            case "resources/images/snare3.png":
+            case "resources/images/electronic_snare2.jpg":
                 return path + "snare3.wav"
-            case "resources/images/kick1.png":
+            case "resources/images/normal_kick.jpg":
                 return path + "kick1.mp3"
-            case "resources/images/kick2.png":
+            case "resources/images/loud_kick.png":
                 return path + "kick2.mp3"
-            case "resources/images/kick3.png":
+            case "resources/images/electronic_kick.png":
                 return path + "kick3.mp3"
-            case "resources/images/ride1.png":
+            case "resources/images/ride.jpg":
                 return path + "ride1.wav"
-            case "resources/images/ride2.png":
+            case "resources/images/hihat.jpg":
                 return path + "hihat.mp3"
-            case "resources/images/ride3.png":
+            case "resources/images/electronic_hihat.jpg":
                 return path + "ride3.wav"
-            case "resources/images/crash1.png":
+            case "resources/images/crash.jpg":
                 return path + "crash.mp3"
-            case "resources/images/crash2.png":
+            case "resources/images/china.jpg":
                 return path + "china.mp3"
-            case "resources/images/crash3.png":
+            case "resources/images/electronic_crash.jpg":
                 return path + "electronic_cymbal.wav"
             case _:
                 return None
