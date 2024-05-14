@@ -12,6 +12,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 
 # Set up the screen
 screen_width = 1200
@@ -26,6 +27,9 @@ pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)  # -1 makes the music loop indefinitely
 pygame.mixer.music.set_pos(9.5)
 
+button_image1 = pygame.image.load("resources/images/button.png")
+button_image2 = pygame.image.load("resources/images/button2.png")
+
 
 # Load GIF using moviepy
 gif_clip = VideoFileClip("resources/images/background.gif")
@@ -33,39 +37,39 @@ gif_clip = gif_clip.resize((screen_width, screen_height))
 frames = [pygame.image.fromstring(frame.tostring(), gif_clip.size, "RGB") for frame in gif_clip.iter_frames()]
 
 # Create buttons
-play_button = Button("Start", 100, 200, 300, 100, GREEN, (0, 200, 0), action=start_drum_app) # Change action later
-choose_drums_button = Button("Choose Drums", 100, 350, 300, 100, RED, (200, 0, 0), action=None)
-choose_mode_button = Button("Mode select", 780, 110, 300, 100, GREEN, (0, 200, 0), image= None)
-exit_button = Button("Exit", 100, 500, 300, 100, RED, (200, 0, 0), action=pygame.quit)
+play_button = Button("Start", 100, 200, 300, 100, WHITE, GREEN, action=start_drum_app, image=button_image1) # Change action later
+choose_drums_button = Button("Choose Drums", 100, 350, 300, 100, WHITE, GREEN, action=None, image=button_image1)
+choose_mode_button = Button("Mode select", 780, 110, 300, 100, WHITE, BLUE, image=button_image1)
+exit_button = Button("Exit", 100, 500, 300, 100, WHITE, RED, action=pygame.quit, image=button_image1)
 
 # Submenu buttons
-snare_button = Button("Snare", 55, 100, 200, 100, GREEN, (0, 200, 0), image=None)
-kick_button = Button("Kick", 290, 100, 200, 100, GREEN, (0, 200, 0), image=None)
-rythm_cymbal_button = Button("Rythm Cymbal", 710, 100, 200, 100, GREEN, (0, 200, 0), image=None)
-accent_cymbal_button = Button("Accent Cymbal", 945, 100, 200, 100, GREEN, (0, 200, 0), image=None)
-back_button = Button("Back", 440, 550, 300, 100, RED, (200, 0, 0), action=None, image=None)
+snare_button = Button("Snare", 55, 100, 200, 100, WHITE, BLUE, image=button_image1)
+kick_button = Button("Kick", 290, 100, 200, 100, WHITE, BLUE, image=button_image1)
+rythm_cymbal_button = Button("Rythm Cymbal", 710, 100, 200, 100, WHITE, BLUE, image=button_image1)
+accent_cymbal_button = Button("Accent Cymbal", 945, 100, 200, 100, WHITE, BLUE, image=button_image1)
+back_button = Button("Back", 440, 550, 300, 100, WHITE, RED, action=None, image=button_image1)
 
 # Mode images
 mode_pic1 = pygame.image.load("resources/images/transparent_mode.png")
 mode_pic2 = pygame.image.load("resources/images/mask_mode.png")
 
 # Drum images
-snare_pic1 = pygame.image.load("resources/images/normal_snare.png")
-snare_pic2 = pygame.image.load("resources/images/loud_snare.jpg")
-snare_pic3 = pygame.image.load("resources/images/electronic_snare2.jpg")
+snare_pic1 = pygame.image.load("resources/images/normal_snare_transparent.png")
+snare_pic2 = pygame.image.load("resources/images/loud_snare_transparent.png")
+snare_pic3 = pygame.image.load("resources/images/electronic_snare_transparent.png")
 
 
-kick_pic1 = pygame.image.load("resources/images/normal_kick.jpg")
-kick_pic2 = pygame.image.load("resources/images/loud_kick.png")
-kick_pic3 = pygame.image.load("resources/images/electronic_kick.png")
+kick_pic1 = pygame.image.load("resources/images/normal_kick_transparent.png")
+kick_pic2 = pygame.image.load("resources/images/loud_kick_transparent.png")
+kick_pic3 = pygame.image.load("resources/images/electronic_kick_transparent.png")
 
-rythm_cymbal_pic1 = pygame.image.load("resources/images/ride.jpg")
-rythm_cymbal_pic2 = pygame.image.load("resources/images/hihat.jpg")
-rythm_cymbal_pic3 = pygame.image.load("resources/images/electronic_hihat.jpg")
+rythm_cymbal_pic1 = pygame.image.load("resources/images/ride_transparent.png")
+rythm_cymbal_pic2 = pygame.image.load("resources/images/hihat_transparent.png")
+rythm_cymbal_pic3 = pygame.image.load("resources/images/electronic_hihat_transparent.png")
 
-accent_cymbal_pic1 = pygame.image.load("resources/images/crash.jpg")
-accent_cymbal_pic2 = pygame.image.load("resources/images/china.jpg")
-accent_cymbal_pic3 = pygame.image.load("resources/images/electronic_crash.jpg")
+accent_cymbal_pic1 = pygame.image.load("resources/images/crash_transparent.png")
+accent_cymbal_pic2 = pygame.image.load("resources/images/china_transparent.png")
+accent_cymbal_pic3 = pygame.image.load("resources/images/electronic_crash_transparent.png")
 
 
 
@@ -136,7 +140,7 @@ while running:
         exit_button.draw(screen, mouse_pos)
 
         # Draw mode image
-        screen.blit(selected_mode, (780, 210))
+        screen.blit(selected_mode, (780, 230))
 
         # Add text under mode image
         text_mode = font.render(mode_name, True, (255, 255, 255))
