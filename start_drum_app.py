@@ -31,7 +31,6 @@ def start_drum_app(snare_img_path, kick_img_path, rythm_img_path, accent_img_pat
 
     # Initialize variables for mouse click event
     
-
     def mouse_callback(event, x, y, flags, param):
         #print (event)
         global mouse_clicked
@@ -125,14 +124,32 @@ def start_drum_app(snare_img_path, kick_img_path, rythm_img_path, accent_img_pat
         for drum in drums:
             if drum.getName() == "crash" and drum.getState() == 1: 
                 drum.playSound()
-            elif drum.getState() == 1 and drum.getDirection() == "Down" and drum.getVelocity() > 15:
-                drum.playSound()
+            elif drum.getState() == 1 and drum.getDirection() == "Down": 
+                velocity = drum.getVelocity()
+                if velocity > 50:
+                    drum.playSound(volume=1)
+                elif velocity > 45:
+                    drum.playSound(volume=0.9)
+                elif velocity > 40:
+                    drum.playSound(volume=0.8)
+                elif velocity > 35:
+                    drum.playSound(volume=0.7)
+                elif velocity > 30:
+                    drum.playSound(volume=0.6)
+                elif velocity > 25:
+                    drum.playSound(volume=0.5)
+                elif velocity > 20:
+                    drum.playSound(volume=0.4)
+                elif velocity > 15:
+                    drum.playSound(volume=0.3)
+                elif velocity > 10:
+                    drum.playSound(volume=0.2)
         
         #print('Mouse click in loop: ', mouse_clicked)
 
         # Check if mouse is clicked and play bass drum sound
         if mouse_clicked:
-            kick.playSound()
+            kick.playSound(volume=1)
             mouse_clicked = False
 
         if mode_name == 'Transparent mode':
@@ -191,7 +208,7 @@ def start_drum_app(snare_img_path, kick_img_path, rythm_img_path, accent_img_pat
 
         cv2.imshow('web cam', frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == 27:
             break
 
     cap.release()

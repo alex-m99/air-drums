@@ -86,7 +86,8 @@ class Drum:
     def getImagePath(self):
         return self.__imagePath
     
-    def playSound(self):
+    def playSound(self, volume):
+        self.__sound.set_volume(volume)
         self.__sound.play()
 
     def chooseSoundPath(self, imagePath):
